@@ -8,13 +8,14 @@ window.onload = function(){
 		var height = window.innerHeight;
 		var canvas = document.getElementById('canvas');
 		var isLoad = false;
+		var micLoad = false;
 		//Структура с "настройками в gui"
+		
 		let options = {
 			ToCursor: true, 
+			Voice: false,
 			reset: function () {
-
 				Reset();
-
 			}
 		};
 		
@@ -75,7 +76,7 @@ window.onload = function(){
 			isLoad = true; //Изменяю вспомогательную переменную
 		
 			console.log(dumpObject(root).join('\n')); //Log информация для отладки
-			console.log(root) //Log информация для отладки
+			//console.log(root) //Log информация для отладки
 
 
 			Head =  root.getObjectByName('Head'); 
@@ -98,80 +99,81 @@ window.onload = function(){
 			rcheek = root.getObjectByName('rcheek');
 		
 
-			const gui = new GUI();
+			const gui = new GUI( );
 			//GUI
 			
 				//Голова
 				const headFolder = gui.addFolder('Head');
-				headFolder.add(options, "ToCursor");
+				
 				headFolder.add(Head.rotation, "z",-1,1,-0.01).onChange(function(value){
 					Head.rotation.z = value;
-				});
+				}).listen();
 				headFolder.add(Head.rotation, "x",-1,1,0.01).onChange(function(value){
 					Head.rotation.x = value;
-				});
+				}).listen();
 
 				//Веки верхние
 				const lidFolder = gui.addFolder('Eyelids');
 				lidFolder.add(llid.rotation, 'z',1.3,1.6,0.01).onChange(function(value){
 					llid.rotation.z = value;
-				}).name('llid');
+				}).name('llid').listen();
 				lidFolder.add(rlid.rotation, 'z',1.3,1.6,0.01).onChange(function(value){
 					rlid.rotation.z = value;
-				}).name('rlid');
+				}).name('rlid').listen();
 				//Веки нижние
 				const cheekFolder = gui.addFolder('Cheeks');
 				cheekFolder.add(lcheek.rotation, 'z',1.2,1.6,0.01).onChange(function(value){
 					lcheek.rotation.z = value;
-				}).name('lcheek');
+				}).name('lcheek').listen();
 				cheekFolder.add(rcheek.rotation, 'z',1.2,1.6,0.01).onChange(function(value){
 					rcheek.rotation.z = value;
-				}).name('rcheek');
+				}).name('rcheek').listen();
 
 				//Брови
 				const browFolder = gui.addFolder('Eyebrows');
 				browFolder.add(lbrow1.rotation,'z',1,1.7,0.01).onChange(function(value){
 					lbrow1.rotation.z = value;
-				}).name('lbrow1');
+				}).name('lbrow1').listen();
 				browFolder.add(lbrow2.rotation,'z',1.1,1.9,0.01).onChange(function(value){
 					lbrow2.rotation.z = value;
-				}).name('lbrow2');
+				}).name('lbrow2').listen();
 				browFolder.add(rbrow1.rotation,'z',1,1.7,0.01).onChange(function(value){
 					rbrow1.rotation.z = value;
-				}).name('rbrow1');
+				}).name('rbrow1').listen();
 				browFolder.add(rbrow2.rotation,'z',1.1,1.9,0.01).onChange(function(value){
 					rbrow2.rotation.z = value;
-				}).name('rbrow2');
+				}).name('rbrow2').listen();
 
 				//Глаза
 				const eyeFolder = gui.addFolder('Eyes');
 				eyeFolder.add(leye.rotation,'z',1.29,2,0.01).onChange(function(value){
 					leye.rotation.z = value;
-				}).name('leye z');
+				}).name('leye z').listen();
 				eyeFolder.add(leye.rotation,'x',-0.4,0.4,0.01).onChange(function(value){
 					leye.rotation.x = value;
-				}).name('leye x');
+				}).name('leye x').listen();
 				eyeFolder.add(reye.rotation,'z',1.29,2,0.01).onChange(function(value){
 					reye.rotation.z = value;
-				}).name('reye z');
+				}).name('reye z').listen();
 				eyeFolder.add(reye.rotation,'x',-0.4,0.4,0.01).onChange(function(value){
 					reye.rotation.x = value;
-				}).name('reye x');
+				}).name('reye x').listen();
 
 				//Челюсть
 				const jawFolder = gui.addFolder('Jaw');
 				jawFolder.add(jaw1.rotation,'z',2.72,3.2,0.01).onChange(function(value){
-					jaw1.rotation.z = value;})
+					jaw1.rotation.z = value;}).listen();
 			
-				gui.add( options, 'reset' );
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+				const miscFolder = gui.addFolder('Misc');
+					miscFolder.add(options, "ToCursor");
+					miscFolder.add(options, "Voice").onChange(function(value){
+						if(value){voice();}
+					});
+					miscFolder.add( options, 'reset' ).name("Reset");
+
+
 		}) 
 
 
@@ -209,22 +211,8 @@ window.onload = function(){
 
 		//Основная рекурсивная функция, в которой обновляются кадры
 		function loop(){
-			if(isLoad){
-					
-					
-			}	
-			
-			//Перестройка размеров окна, возможно ненужная функция, потому что центр сцены всё-равно не сбрасывается
-			
-
-			//Выставляю мсвет в позицию камеры
-			//light.position.x = camera.position.x
-			//light.position.z = camera.position.z
-			
 			//Рендерю сцену
 			renderer.render(scene, camera);
-			
-
 			requestAnimationFrame(function() {loop();});
 		}
 		loop();
@@ -276,23 +264,6 @@ document.addEventListener('keydown', (event) => {
 	//console.log(event);
 	if(isLoad){
 		
-		/*
-		if(event.code == "Space"){
-			EyesClose();
-			console.log(lcheek.rotation.z)
-			console.log(rcheek.rotation.z)
-		}
-
-		if(event.code == "KeyZ"){
-			lcheek.rotation.z += 0.1;
-			
-		}
-
-		if(event.code == "KeyX"){
-			lcheek.rotation.z -= 0.1;
-		}
-
-		*/
 		if(event.code == "KeyR"){
 			Reset();
 		}
@@ -308,7 +279,8 @@ document.addEventListener('keydown', (event) => {
 				console.log("")
 				}
 			}
-		}) */
+		}) 
+*/
 	
 
 	function EyesClose(){
@@ -338,5 +310,81 @@ document.addEventListener('keydown', (event) => {
 		rcheek.rotation.z = 1.4960062860206629
 	}
 
+	////////////// https://github.com/piecioshka/microphone-volume-level-monitor
+	async function listen() {
+		
+		if(!micLoad){
+			const stream =  await navigator.mediaDevices.getUserMedia({ audio: true })
+			const audioContext = new AudioContext();
+			const analyser = audioContext.createAnalyser();
+			const microphone = audioContext.createMediaStreamSource(stream);
+			const javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+		
+			analyser.smoothingTimeConstant = 0.8;
+			analyser.fftSize = 1024;
+		
+			microphone.connect(analyser);
+			analyser.connect(javascriptNode);
+			javascriptNode.connect(audioContext.destination);
+			javascriptNode.onaudioprocess = function () {
+				const array = new Uint8Array(analyser.frequencyBinCount);
+				analyser.getByteFrequencyData(array);
+				let values = 0;
+		
+				const length = array.length;
+				for (let i = 0; i < length; i++) {
+					values += (array[i]);
+				}
+		
+				const average = Math.round(values / length);
+				if(options.Voice){
+					updateBarIndicator(average)
+				}
+				else{
+					return 0;
+				}
+				//cb(average);
+				micLoad = true;
+			}
+		
+	}
+}
+	function updateBarIndicator(average) {
+		if(options.Voice){
+			jaw1.rotation.z = 2.72 + average *0.007;
 
+			/*
+			if(average <= 50)
+				jaw1.rotation.z = 2.72 + average*2 *0.007;
+			else
+				jaw1.rotation.z = 3.42;
+			*/
+		//console.log(average)
+	}
+	else{
+		return 0;
+		}
+	}
+	
+	function voice() {
+		console.log(options.Voice)
+		if(options.Voice){
+			listen()
+		}
+		else{
+			return 0;
+		}
+			
+	//	 listen((percent) => {
+	//		updateBarIndicator(percent);
+	//	});
+	}
+	
+
+	function voice_disavle() {
+		listen((percent) => {
+			updateBarIndicator(percent);
+		});
+	}
+	
 }	
