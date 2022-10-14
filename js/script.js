@@ -17,7 +17,9 @@ window.onload = function(){
 			reset: function () {
 				Reset();
 			},
-			VoiceMultiple: 7
+			VoiceMultiple: 7,
+			VoiceSmooth: 0.1
+
 		};
 		
 		//Настройки канваса
@@ -175,6 +177,9 @@ window.onload = function(){
 					miscFolder.add( options, 'VoiceMultiple',1,30,1).onChange(function(value){
 						options.VoiceMultiple = value;
 					}).name("Voice Multiple");
+					miscFolder.add( options, 'VoiceSmooth',0.1,0.9,0.1).onChange(function(value){
+						options.VoiceSmooth = value;
+					}).name("Voice Smooth");
 					miscFolder.add( options, 'reset' ).name("Reset pos");
 
 
@@ -324,7 +329,8 @@ document.addEventListener('keydown', (event) => {
 			const microphone = audioContext.createMediaStreamSource(stream);
 			const javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
 		
-			analyser.smoothingTimeConstant = 0.8;
+			//analyser.smoothingTimeConstant = 0.8;
+			analyser.smoothingTimeConstant = options.VoiceSmooth;
 			analyser.fftSize = 1024;
 		
 			microphone.connect(analyser);
@@ -342,6 +348,7 @@ document.addEventListener('keydown', (event) => {
 		
 				const average = Math.round(values / length);
 				if(options.Voice){
+					analyser.smoothingTimeConstant = options.VoiceSmooth;
 					updateBarIndicator(average)
 				}
 				else{
@@ -350,7 +357,7 @@ document.addEventListener('keydown', (event) => {
 				//cb(average);
 				micLoad = true;
 			}
-		
+			//analyser.smoothingTimeConstant = options.VoiceSmooth;
 	}
 }
 	function updateBarIndicator(average) {
