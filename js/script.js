@@ -16,7 +16,8 @@ window.onload = function(){
 			Voice: false,
 			reset: function () {
 				Reset();
-			}
+			},
+			VoiceMultiple: 7
 		};
 		
 		//Настройки канваса
@@ -171,7 +172,10 @@ window.onload = function(){
 					miscFolder.add(options, "Voice").onChange(function(value){
 						if(value){voice();}
 					});
-					miscFolder.add( options, 'reset' ).name("Reset");
+					miscFolder.add( options, 'VoiceMultiple',1,30,1).onChange(function(value){
+						options.VoiceMultiple = value;
+					}).name("Voice Multiple");
+					miscFolder.add( options, 'reset' ).name("Reset pos");
 
 
 		}) 
@@ -351,7 +355,11 @@ document.addEventListener('keydown', (event) => {
 }
 	function updateBarIndicator(average) {
 		if(options.Voice){
-			jaw1.rotation.z = 2.72 + average *0.007;
+			var mul = 2.72 + average * (options.VoiceMultiple/1000);
+
+			if(mul <= 3.42)
+				jaw1.rotation.z = mul;
+			else jaw1.rotation.z = 3.42;
 
 			/*
 			if(average <= 50)
